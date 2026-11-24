@@ -35,6 +35,7 @@ function App() {
   const [modelLoading, setModelLoading] = useState(false)
   const [modelError, setModelError] = useState(false)
   const viewerWrap = useRef(null)
+  const modelViewer = useRef(null)
 
   async function load() {
     setLoading(true)
@@ -72,6 +73,22 @@ function App() {
     }
   }
   useEffect(() => { load() }, [])
+
+  // Listen to model-viewer's native events directly; React's onLoad handler
+  // can miss events from some custom elements on mobile browsers.
+  useEffect(() => {
+    const el = modelViewer.current
+    if (!el || !show3d || !selected) return
+    const handleLoad = () => { setModelLoading(false); setModelError(false) }
+    const handleError = () => { setModelLoading(false); setModelError(true); setShow3d(false) }
+    el.addEventListener('load', handleLoad)
+    el.addEventListener('error', handleError)
+    if (el.loaded) handleLoad()
+    return () => {
+      el.removeEventListener('load', handleLoad)
+      el.removeEventListener('error', handleError)
+    }
+  }, [selected, show3d])
 
   // Do not leave visitors on an endless 3D loading screen if a model host fails silently.
   useEffect(() => {
@@ -124,7 +141,7 @@ function App() {
             <button className={!show3d || !modelSrc(selected) || modelError ? 'active' : ''} onClick={() => setShow3d(false)}><ImageIcon size={16}/> Photos</button>
           </div>
           {show3d && modelSrc(selected) && !modelError ? <div className="model-stage">
-            <model-viewer key={modelSrc(selected)} src={modelSrc(selected)} loading="eager" camera-controls touch-action="pan-y" auto-rotate rotation-per-second="18deg" interaction-prompt="auto" shadow-intensity="1" exposure="1" environment-image="neutral" ar alt={selected.name || selected.product_name || '3D product model'} onLoad={() => setModelLoading(false)} onError={() => {setModelLoading(false);setModelError(true);setShow3d(false)}}>
+            <model-viewer ref={modelViewer} key={modelSrc(selected)} src={modelSrc(selected)} loading="eager" camera-controls touch-action="pan-y" auto-rotate rotation-per-second="18deg" interaction-prompt="auto" shadow-intensity="1" exposure="1" environment-image="neutral" ar alt={selected.name || selected.product_name || '3D product model'} onLoad={() => setModelLoading(false)} onError={() => {setModelLoading(false);setModelError(true);setShow3d(false)}}>
               <div slot="progress-bar" className="model-progress"><span></span></div>
             </model-viewer>
             {modelLoading && <div className="model-loading"><span className="loader"/>Loading 3D model—</div>}
