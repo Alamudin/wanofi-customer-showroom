@@ -3,7 +3,7 @@ import { Search, ShoppingBag, Menu, X, ArrowLeft, MessageCircle, Box, Image as I
 
 const API = (import.meta.env.VITE_API_BASE_URL || 'https://wanofi-ai-manager.onrender.com/api').replace(/\/$/, '')
 const WA = (import.meta.env.VITE_WHATSAPP_NUMBER || '251924484087').replace(/\D/g, '')
-const TELEGRAM = import.meta.env.VITE_TELEGRAM_CHANNEL || 'https://t.me/'
+const TELEGRAM = import.meta.env.VITE_TELEGRAM_CHANNEL || 'https://t.me/WanofiMobile'
 const money = value => `ETB ${Number(value || 0).toLocaleString('en-ET', { maximumFractionDigits: 2 })}`
 const is530JX = p => Number(p?.id) === 82 || String(p?.sku || '').toLowerCase() === 'mb_530jx'
 const isEarbuds = p => /pro\s*5s|airpods|earbuds|earbud|wireless buds|bluetooth buds/i.test(`${p?.name || p?.product_name || ''} ${p?.category || ''} ${p?.sku || ''}`)
