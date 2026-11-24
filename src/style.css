@@ -263,3 +263,10 @@ body{background:radial-gradient(ellipse at 50% -15%,#173b66 0%,#0a1d35 42%,#0612
 }
 .brand:hover .brand-mark,.footer-brand:hover .brand-mark{animation-duration:1.4s;filter:brightness(1.2)}
 @media(prefers-reduced-motion:reduce){.brand-mark{animation:none;will-change:auto}}
+
+/* Official WANOFI showroom logo artwork */
+.brand-logo-image{display:block;width:clamp(185px,24vw,290px);height:auto;max-height:78px;object-fit:contain;filter:drop-shadow(0 0 12px #168bdf44);transition:filter .25s,transform .25s}
+.brand:hover .brand-logo-image{filter:drop-shadow(0 0 18px #168bdf88);transform:translateY(-1px) scale(1.015)}
+.footer-brand .brand-logo-image{width:clamp(210px,28vw,330px);max-height:90px}
+.brand{display:flex;align-items:center;min-width:0}
+@media(max-width:650px){.brand-logo-image{width:clamp(155px,48vw,220px);max-height:58px}.footer-brand .brand-logo-image{width:min(75vw,280px);max-height:75px}}
