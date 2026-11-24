@@ -291,3 +291,9 @@ body{background:radial-gradient(ellipse at 50% -15%,#173b66 0%,#0a1d35 42%,#0612
 @media(prefers-reduced-motion:reduce){
   .brand-logo-image{animation:none;will-change:auto}
 }
+
+/* Improve animated WANOFI lettering visibility; keep Explore CTA glass-transparent */
+.hero-showcase .ribbon-wordmark{opacity:1!important;color:#fff!important;text-shadow:0 0 5px #fff,0 0 14px #59c7ff,0 0 30px #a45cff,0 0 55px #ff4bb8!important;animation:wanofi-glow-strong 2.8s ease-in-out infinite!important;z-index:1}
+@keyframes wanofi-glow-strong{0%,100%{opacity:.92;filter:brightness(1.1)}50%{opacity:1;filter:brightness(1.65)}}
+.hero-showcase .secondary-btn.smart-btn{background:transparent!important;background-color:transparent!important;border:1px solid #b8dcff8a!important;color:#eaf6ff!important;backdrop-filter:blur(5px)!important;box-shadow:inset 0 0 0 1px #ffffff08!important}
+.hero-showcase .secondary-btn.smart-btn:hover{background:#ffffff0c!important;border-color:#8bd8ff!important;box-shadow:0 0 24px #35aaff24!important}
