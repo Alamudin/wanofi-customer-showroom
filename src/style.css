@@ -49,3 +49,50 @@
 .order-disclaimer{font-size:10px;color:#879194;line-height:1.6}
 .empty-order{min-height:55vh;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;color:#8a9495}
 @media(max-width:650px){.cart-header-btn{padding:9px 10px;font-size:9px}.card-add-order{opacity:1;left:8px;bottom:8px;padding:8px 9px}.order-panel{padding:22px 18px}.header-actions{gap:7px}}
+
+
+/* WANOFI premium mixed showroom refresh — dark editorial hero + bright shopping canvas */
+:root{scroll-behavior:smooth;--wanofi-ink:#10191f;--wanofi-gold:#c8945b;--wanofi-paper:#fafaf8}
+body{background:var(--wanofi-paper)}
+.top-strip{background:#0b1217;color:#d8dedf}
+.header{box-shadow:0 5px 22px #10182008}
+.brand-mark{background:linear-gradient(145deg,#d7ad7e,#a8733f);box-shadow:0 5px 14px #9a6c3b30}
+.hero{background:radial-gradient(ellipse at 78% 45%,#263943 0%,#17252d 38%,#0d171d 78%);min-height:570px}
+.hero:before{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 48%,#ffffff06 48.2%,transparent 48.5%),linear-gradient(25deg,transparent 70%,#d5a36b12 70.2%,transparent 70.5%);pointer-events:none}
+.hero h1{font-size:clamp(52px,6.4vw,82px);line-height:1.01}
+.hero-content>p{font-size:14px;max-width:465px}
+.hero .primary-btn{box-shadow:0 10px 28px #bd874933;transition:transform .2s,box-shadow .2s}
+.hero .primary-btn:hover{transform:translateY(-2px);box-shadow:0 14px 32px #bd874955}
+.hero-card{border:1px solid #ffffff45;border-radius:5px;background:linear-gradient(145deg,#e6cba9,#a77b55)}
+.phone-art{box-shadow:0 22px 45px #05090d80}
+.floating-tag{border-left:3px solid var(--wanofi-gold)}
+.shop-section{padding-top:88px}
+.section-heading h2{font-size:clamp(31px,3vw,40px)}
+.product-count{background:#fff;border:1px solid #eceee9;padding:10px 15px;font-size:24px}
+.toolbar{border-bottom-color:#dfe3dd}
+.category-list button{border-radius:2px;transition:background .18s,color .18s}
+.category-list button.selected{background:#17252d;box-shadow:0 5px 14px #17252d20}
+.search-box{border-radius:3px;transition:border-color .2s,box-shadow .2s}
+.search-box:focus-within{border-color:#c8945b;box-shadow:0 0 0 3px #c8945b1c}
+.product-grid{gap:25px 19px}
+.product-card{border:1px solid #eceee9;box-shadow:0 4px 18px #16212806;transition:transform .25s,box-shadow .25s,border-color .25s}
+.product-card:hover{transform:translateY(-6px);border-color:#ddc6aa;box-shadow:0 18px 40px #16212812}
+.product-image{background:linear-gradient(145deg,#f3f4f0,#e9ece7)}
+.product-image>img{transition:transform .45s ease}
+.product-card:hover .product-image>img{transform:scale(1.045)}
+.quick-view,.card-add-order{border-radius:2px;box-shadow:0 5px 18px #10182015}
+.card-add-order{background:var(--wanofi-ink)}
+.card-bottom b{font-size:14px}
+.card-bottom button{transition:background .2s,color .2s}
+.card-bottom button:hover{background:var(--wanofi-ink);color:#fff}
+.detail-page{padding-top:42px}
+.viewer-panel{background:radial-gradient(circle at 50% 45%,#f8f9f6,#e9ece7);border:1px solid #e4e8e1}
+.detail-info h1{font-size:clamp(32px,4vw,45px)}
+.detail-price{color:#17252d;font-size:27px}
+.contact-btn{min-width:210px;box-shadow:0 8px 20px #bd87492b}
+.footer{background:linear-gradient(115deg,#0d171d,#17252d)}
+.footer-brand .brand-mark{background:linear-gradient(145deg,#d7ad7e,#a8733f)}
+.order-panel{border-left:1px solid #e7e9e4}
+.send-order-btn{box-shadow:0 8px 20px #bd87492b}
+@media(max-width:850px){.hero{min-height:unset}.shop-section{padding-top:65px}}
+@media(max-width:650px){.hero{background:radial-gradient(ellipse at 80% 72%,#263943 0%,#17252d 43%,#0d171d 85%);padding-top:51px}.hero h1{font-size:clamp(48px,13vw,62px)}.hero-art{margin-top:4px}.shop-section{padding-top:52px}.product-card{border-radius:2px}.product-image{background:linear-gradient(145deg,#f4f5f2,#e9ece7)}.section-heading{align-items:center}.product-count{padding:8px 10px;font-size:20px}.detail-page{padding-top:24px}}
