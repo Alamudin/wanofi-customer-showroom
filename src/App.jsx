@@ -9,6 +9,12 @@ const listImages = p => Array.isArray(p?.images) ? p.images.filter(Boolean) : []
 const modelSrc = p => {
   let raw = String(p?.model_3d_url || '').trim()
   if (!raw) return ''
+  // Convert GitHub's HTML blob page URL into a direct binary URL usable by <model-viewer>.
+  const githubBlob = raw.match(/^https?:\/\/github\.com\/([^/]+)\/([^/]+)\/blob\/([^/]+)\/(.+)$/i)
+  if (githubBlob) {
+    const [, owner, repo, ref, path] = githubBlob
+    return `https://raw.githubusercontent.com/${owner}/${repo}/${ref}/${path}`
+  }
   if (/^(https?:|data:|blob:)/i.test(raw)) return raw
   while (raw.startsWith('/')) raw = raw.slice(1)
   if (raw.startsWith('public/')) raw = raw.slice(7)
@@ -66,6 +72,17 @@ function App() {
     }
   }
   useEffect(() => { load() }, [])
+
+  // Do not leave visitors on an endless 3D loading screen if a model host fails silently.
+  useEffect(() => {
+    if (!selected || !show3d || !modelLoading) return
+    const timer = window.setTimeout(() => {
+      setModelLoading(false)
+      setModelError(true)
+      setShow3d(false)
+    }, 20000)
+    return () => window.clearTimeout(timer)
+  }, [selected, show3d, modelLoading])
 
   const categoryNames = useMemo(() => ['All', ...new Set([...categories.map(c => typeof c === 'string' ? c : c.name).filter(Boolean), ...products.map(p => p.category).filter(Boolean)])], [categories, products])
   const filtered = useMemo(() => products.filter(p => {
