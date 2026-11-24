@@ -169,7 +169,7 @@ function App() {
   return <div className="app-shell">
     <div className="top-strip">ADAMA, ETHIOPIA <span>—</span> QUALITY MOBILE, ACCESSORIES & FASHION</div>
     <header className="header">
-      <a className="brand" href="#home" onClick={() => setSelected(null)}><span className="brand-mark">W</span><span><b>WANOFI</b><small>MOBILE & FASHION</small></span></a>
+      <a className="brand" href="#home" onClick={() => setSelected(null)}><img className="brand-logo-image" src="/wanofi-logo.svg" alt="WANOFI Mobile & Fashion"/></a>
       <nav className={mobileMenu ? 'nav open' : 'nav'}>
         <a href="#home" onClick={() => {setSelected(null);setMobileMenu(false)}}>Home</a>
         <a href="#shop" onClick={() => {setSelected(null);setMobileMenu(false)}}>Shop</a>
