@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { Search, ShoppingBag, Menu, X, ArrowLeft, MessageCircle, Box, Image as ImageIcon, ChevronLeft, ChevronRight, RefreshCw, Smartphone, Glasses, Watch } from 'lucide-react'
 
 const API = (import.meta.env.VITE_API_BASE_URL || 'https://wanofi-ai-manager.onrender.com/api').replace(/\/$/, '')
@@ -18,6 +18,9 @@ function App() {
   const [mobileMenu, setMobileMenu] = useState(false)
   const [imageIndex, setImageIndex] = useState(0)
   const [show3d, setShow3d] = useState(true)
+  const [modelLoading, setModelLoading] = useState(false)
+  const [modelError, setModelError] = useState(false)
+  const viewerWrap = useRef(null)
 
   async function load() {
     setLoading(true); setError('')
@@ -39,7 +42,16 @@ function App() {
     return (category === 'All' || p.category === category) && text.includes(query.toLowerCase())
   }), [products, category, query])
 
-  function openProduct(p) { setSelected(p); setImageIndex(0); setShow3d(Boolean(p.model_3d_url)); window.scrollTo({ top: 0, behavior: 'smooth' }) }
+  function openProduct(p) { setSelected(p); setImageIndex(0); setShow3d(Boolean(p.model_3d_url)); setModelLoading(Boolean(p.model_3d_url)); setModelError(false); window.scrollTo({ top: 0, behavior: 'smooth' }) }
+  function choose3d() { if (selected?.model_3d_url) { setModelError(false); setModelLoading(true); setShow3d(true) } }
+  async function toggleViewerFullscreen() {
+    const el = viewerWrap.current
+    if (!el) return
+    try {
+      if (document.fullscreenElement) await document.exitFullscreen()
+      else if (el.requestFullscreen) await el.requestFullscreen()
+    } catch (e) { console.warn('Fullscreen is not available in this browser.', e) }
+  }
   function contactText(p) { return `Hello WANOFI, I am interested in ${p.name || p.product_name}${p.sku ? ` (SKU: ${p.sku})` : ''}. Is it available?` }
   function contactHref(p) { const msg = encodeURIComponent(contactText(p)); return WA ? `https://wa.me/${WA}?text=${msg}` : `https://t.me/${TELEGRAM.split('/').filter(Boolean).pop()}` }
 
@@ -58,16 +70,23 @@ function App() {
     {selected ? <main className="detail-page">
       <button className="back-btn" onClick={() => setSelected(null)}><ArrowLeft size={17}/> Back to products</button>
       <div className="detail-grid">
-        <section className="viewer-panel">
+        <section className="viewer-panel" ref={viewerWrap}>
           <div className="viewer-tabs">
-            <button className={show3d && selected.model_3d_url ? 'active' : ''} onClick={() => selected.model_3d_url && setShow3d(true)} disabled={!selected.model_3d_url}><Box size={16}/> 3D View</button>
-            <button className={!show3d || !selected.model_3d_url ? 'active' : ''} onClick={() => setShow3d(false)}><ImageIcon size={16}/> Photos</button>
+            <button className={show3d && selected.model_3d_url && !modelError ? 'active' : ''} onClick={choose3d} disabled={!selected.model_3d_url}><Box size={16}/> 3D View</button>
+            <button className={!show3d || !selected.model_3d_url || modelError ? 'active' : ''} onClick={() => setShow3d(false)}><ImageIcon size={16}/> Photos</button>
           </div>
-          {show3d && selected.model_3d_url ? <model-viewer key={selected.model_3d_url} src={selected.model_3d_url} camera-controls touch-action="pan-y" auto-rotate rotation-per-second="20deg" shadow-intensity="1" exposure="1" environment-image="neutral" ar alt={selected.name || selected.product_name || '3D product model'}><div slot="progress-bar" className="progress-bar"></div></model-viewer> : <div className="photo-viewer">
-            {listImages(selected).length ? <><img src={listImages(selected)[imageIndex]} alt={selected.name || 'Product'} onError={e => e.currentTarget.style.visibility='hidden'}/>{listImages(selected).length > 1 && <><button className="gallery-arrow prev" onClick={() => setImageIndex((imageIndex - 1 + listImages(selected).length) % listImages(selected).length)}><ChevronLeft/></button><button className="gallery-arrow next" onClick={() => setImageIndex((imageIndex + 1) % listImages(selected).length)}><ChevronRight/></button></>}</> : <div className="no-photo"><Smartphone size={64}/><span>Product photos coming soon</span></div>}
+          {show3d && selected.model_3d_url && !modelError ? <div className="model-stage">
+            <model-viewer key={selected.model_3d_url} src={selected.model_3d_url} camera-controls touch-action="pan-y" auto-rotate rotation-per-second="18deg" interaction-prompt="auto" shadow-intensity="1" exposure="1" environment-image="neutral" ar alt={selected.name || selected.product_name || '3D product model'} onLoad={() => setModelLoading(false)} onError={() => {setModelLoading(false);setModelError(true);setShow3d(false)}}>
+              <div slot="progress-bar" className="model-progress"><span></span></div>
+            </model-viewer>
+            {modelLoading && <div className="model-loading"><span className="loader"/>Loading 3D model…</div>}
+            <button className="viewer-fullscreen" type="button" onClick={toggleViewerFullscreen} aria-label="View 3D model fullscreen">⛶ <span>Full screen</span></button>
+          </div> : <div className="photo-viewer">
+            {modelError && <div className="model-error-note">This 3D model could not be loaded. Showing product photos instead.</div>}
+            {listImages(selected).length ? <><img src={listImages(selected)[imageIndex]} alt={selected.name || selected.product_name || 'Product'} onError={e => {e.currentTarget.style.visibility='hidden'}}/>{listImages(selected).length > 1 && <><button className="gallery-arrow prev" onClick={() => setImageIndex((imageIndex - 1 + listImages(selected).length) % listImages(selected).length)} aria-label="Previous photo"><ChevronLeft/></button><button className="gallery-arrow next" onClick={() => setImageIndex((imageIndex + 1) % listImages(selected).length)} aria-label="Next photo"><ChevronRight/></button></>}</> : <div className="no-photo"><Smartphone size={64}/><span>Product photos coming soon</span></div>}
           </div>}
-          {selected.model_3d_url && <p className="viewer-hint"><RefreshCw size={14}/> Drag to rotate • Pinch or scroll to zoom</p>}
-          {listImages(selected).length > 0 && <div className="thumbs">{listImages(selected).map((src,i)=><button key={src+i} className={i===imageIndex?'chosen':''} onClick={()=>{setImageIndex(i);setShow3d(false)}}><img src={src} alt={`View ${i+1}`}/></button>)}</div>}
+          {show3d && selected.model_3d_url && !modelError && <p className="viewer-hint"><RefreshCw size={14}/> Drag to rotate • Pinch to zoom • Full screen for details</p>}
+          {listImages(selected).length > 0 && <div className="thumbs">{listImages(selected).map((src,i)=><button key={src+i} className={!show3d && i===imageIndex?'chosen':''} onClick={()=>{setImageIndex(i);setShow3d(false)}}><img src={src} alt={`View ${i+1}`}/></button>)}</div>}
         </section>
         <section className="detail-info"><span className="eyebrow">{selected.category || 'WANOFI COLLECTION'}</span><h1>{selected.name || selected.product_name}</h1>{selected.sku && <p className="sku">Product code: {selected.sku}</p>}<div className="detail-price">{money(selected.price ?? selected.selling_price)}</div><div className={selected.available ? 'availability in-stock' : 'availability'}><i/> {selected.available ? 'Available — contact us to confirm' : 'Currently unavailable'}</div><p className="description">{selected.description || 'Contact WANOFI for product details, specifications and current availability.'}</p><a className="primary-btn contact-btn" href={contactHref(selected)} target="_blank" rel="noreferrer"><MessageCircle size={19}/> Ask about this product</a><p className="secure-note">Visit our shop in Adama, Ethiopia. Product availability and prices may change.</p></section>
       </div>
