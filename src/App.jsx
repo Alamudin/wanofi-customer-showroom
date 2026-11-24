@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { Search, ShoppingBag, Menu, X, ArrowLeft, MessageCircle, Box, Image as ImageIcon, ChevronLeft, ChevronRight, RefreshCw, Smartphone, Glasses, Watch } from 'lucide-react'
 
 const API = (import.meta.env.VITE_API_BASE_URL || 'https://wanofi-ai-manager.onrender.com/api').replace(/\/$/, '')
-const WA = (import.meta.env.VITE_WHATSAPP_NUMBER || '').replace(/\D/g, '')
+const WA = (import.meta.env.VITE_WHATSAPP_NUMBER || '251924484087').replace(/\D/g, '')
 const TELEGRAM = import.meta.env.VITE_TELEGRAM_CHANNEL || 'https://t.me/'
 const money = value => `ETB ${Number(value || 0).toLocaleString('en-ET', { maximumFractionDigits: 2 })}`
 const is530JX = p => Number(p?.id) === 82 || String(p?.sku || '').toLowerCase() === 'mb_530jx'
