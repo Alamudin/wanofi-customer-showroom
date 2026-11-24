@@ -6,7 +6,7 @@ const WA = (import.meta.env.VITE_WHATSAPP_NUMBER || '').replace(/\D/g, '')
 const TELEGRAM = import.meta.env.VITE_TELEGRAM_CHANNEL || 'https://t.me/'
 const money = value => `ETB ${Number(value || 0).toLocaleString('en-ET', { maximumFractionDigits: 2 })}`
 const is530JX = p => Number(p?.id) === 82 || String(p?.sku || '').toLowerCase() === 'mb_530jx'
-const isEarbuds = p => /airpods|earbuds|earbud|wireless buds|bluetooth buds/i.test(`${p?.name || p?.product_name || ''} ${p?.category || ''} ${p?.sku || ''}`)
+const isEarbuds = p => /pro\s*5s|airpods|earbuds|earbud|wireless buds|bluetooth buds/i.test(`${p?.name || p?.product_name || ''} ${p?.category || ''} ${p?.sku || ''}`)
 const listImages = p => {
   const images = Array.isArray(p?.images) ? p.images.filter(Boolean) : []
   // Temporary generic preview until WANOFI uploads actual 530JX photos.
