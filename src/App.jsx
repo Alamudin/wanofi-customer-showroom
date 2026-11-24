@@ -7,10 +7,12 @@ const TELEGRAM = import.meta.env.VITE_TELEGRAM_CHANNEL || 'https://t.me/'
 const money = value => `ETB ${Number(value || 0).toLocaleString('en-ET', { maximumFractionDigits: 2 })}`
 const listImages = p => Array.isArray(p?.images) ? p.images.filter(Boolean) : []
 const modelSrc = p => {
-  const raw = String(p?.model_3d_url || '').trim()
+  let raw = String(p?.model_3d_url || '').trim()
   if (!raw) return ''
   if (/^(https?:|data:|blob:)/i.test(raw)) return raw
-  return `/${raw.replace(/^\\/+/, '').replace(/^public\\//, '')}`
+  while (raw.startsWith('/')) raw = raw.slice(1)
+  if (raw.startsWith('public/')) raw = raw.slice(7)
+  return `/${raw}`
 }
 
 function App() {
