@@ -19,3 +19,33 @@
 .model-error-note{position:absolute;top:8px;left:8px;right:8px;z-index:1;background:#fff4e8;color:#8a5a2d;padding:9px 12px;font-size:11px;text-align:center}
 @media(max-width:850px){.model-stage{height:370px}}
 @media(max-width:650px){.model-stage{height:330px}.viewer-fullscreen{right:8px;bottom:8px;padding:8px 10px}.viewer-fullscreen span{font-size:9px}.viewer-panel:fullscreen{padding:12px}.viewer-panel:fullscreen .model-stage{height:calc(100vh - 105px);margin-top:45px}}
+
+
+/* Customer order cart and checkout */
+.cart-header-btn{display:flex;align-items:center;gap:7px;border:1px solid #e2e5e1;background:#fff;padding:10px 13px;font-size:11px;font-weight:700;color:#172027}
+.cart-header-btn b{display:grid;place-items:center;min-width:19px;height:19px;border-radius:50%;background:#c18b4e;color:#fff;font-size:10px}
+.card-add-order{position:absolute;left:12px;bottom:12px;border:0;background:#17232a;color:#fff;padding:9px 12px;font-size:10px;font-weight:700;opacity:0;transition:opacity .2s}
+.product-card:hover .card-add-order{opacity:1}
+.order-backdrop{position:fixed;inset:0;z-index:30;background:#10182099;display:flex;justify-content:flex-end}
+.order-panel{width:min(470px,100%);height:100%;overflow:auto;background:#fff;padding:28px;box-shadow:-15px 0 45px #0002}
+.order-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+.order-head h2{font:800 27px Manrope;margin:8px 0 0}
+.order-head>button{border:0;background:#f1f2ef;padding:9px}
+.order-items{border-top:1px solid #e9ebe7}
+.order-item{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 0;border-bottom:1px solid #e9ebe7}
+.order-item>div:first-child{display:flex;flex-direction:column;gap:6px}
+.order-item b{font-size:12px}.order-item small{font-size:10px;color:#8a9495}
+.qty-control{display:flex;align-items:center;gap:9px}
+.qty-control button{border:1px solid #e0e4df;background:#fff;width:27px;height:27px}
+.qty-control b{min-width:12px;text-align:center}
+.qty-control .remove-item{border:0;color:#a34d3f;font-size:18px;margin-left:4px}
+.order-total{display:flex;justify-content:space-between;padding:20px 0;margin-bottom:8px;border-bottom:1px solid #e9ebe7;font-size:13px}
+.order-total b{font:800 17px Manrope}
+.order-field{display:flex;flex-direction:column;gap:7px;margin:15px 0;font-size:11px;font-weight:700;color:#536067}
+.order-field input,.order-field textarea{width:100%;border:1px solid #dfe3de;padding:12px;font:12px 'DM Sans';outline-color:#c18b4e;background:#fff}
+.order-field textarea{min-height:75px;resize:vertical}
+.send-order-btn{width:100%;margin-top:5px;cursor:pointer}
+.order-error{background:#fff1ed;color:#a13f31;padding:11px;font-size:11px}
+.order-disclaimer{font-size:10px;color:#879194;line-height:1.6}
+.empty-order{min-height:55vh;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;color:#8a9495}
+@media(max-width:650px){.cart-header-btn{padding:9px 10px;font-size:9px}.card-add-order{opacity:1;left:8px;bottom:8px;padding:8px 9px}.order-panel{padding:22px 18px}.header-actions{gap:7px}}
