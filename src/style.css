@@ -227,3 +227,39 @@ body{background:radial-gradient(ellipse at 50% -15%,#173b66 0%,#0a1d35 42%,#0612
 .empty-order{color:#a9c2dc!important}
 .nav.open{background:rgba(9,29,52,.97)!important}
 @media(max-width:650px){.nav{background:rgba(9,29,52,.97)!important}.product-image,.arrival-image{background:linear-gradient(145deg,rgba(33,75,112,.7),rgba(9,29,52,.92))!important}}
+
+
+/* WANOFI brand mark: elegant continuous 3D flip */
+.brand-mark{
+  position:relative;
+  transform-style:preserve-3d;
+  transform-origin:center;
+  animation:wanofi-logo-flip 5.5s ease-in-out infinite;
+  backface-visibility:visible;
+  will-change:transform;
+}
+.brand-mark:after{
+  content:"W";
+  position:absolute;
+  inset:0;
+  display:grid;
+  place-items:center;
+  border-radius:inherit;
+  color:#eaf8ff;
+  background:linear-gradient(145deg,#258fc1,#123e70);
+  border:1px solid #8cdbff88;
+  transform:rotateY(180deg);
+  backface-visibility:hidden;
+  font:800 22px Manrope,sans-serif;
+}
+.brand-mark{
+  backface-visibility:hidden;
+  box-shadow:0 0 0 1px #75cfff35,0 5px 18px #1689d455;
+}
+@keyframes wanofi-logo-flip{
+  0%,16%,100%{transform:perspective(600px) rotateY(0deg)}
+  36%,54%{transform:perspective(600px) rotateY(180deg)}
+  74%,88%{transform:perspective(600px) rotateY(360deg)}
+}
+.brand:hover .brand-mark,.footer-brand:hover .brand-mark{animation-duration:1.4s;filter:brightness(1.2)}
+@media(prefers-reduced-motion:reduce){.brand-mark{animation:none;will-change:auto}}
