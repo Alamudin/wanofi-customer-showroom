@@ -6,6 +6,12 @@ const WA = (import.meta.env.VITE_WHATSAPP_NUMBER || '').replace(/\D/g, '')
 const TELEGRAM = import.meta.env.VITE_TELEGRAM_CHANNEL || 'https://t.me/'
 const money = value => `ETB ${Number(value || 0).toLocaleString('en-ET', { maximumFractionDigits: 2 })}`
 const listImages = p => Array.isArray(p?.images) ? p.images.filter(Boolean) : []
+const modelSrc = p => {
+  const raw = String(p?.model_3d_url || '').trim()
+  if (!raw) return ''
+  if (/^(https?:|data:|blob:)/i.test(raw)) return raw
+  return `/${raw.replace(/^\\/+/, '').replace(/^public\\//, '')}`
+}
 
 function App() {
   const [products, setProducts] = useState([])
@@ -65,8 +71,8 @@ function App() {
     return (category === 'All' || p.category === category) && text.includes(query.toLowerCase())
   }), [products, category, query])
 
-  function openProduct(p) { setSelected(p); setImageIndex(0); setShow3d(Boolean(p.model_3d_url)); setModelLoading(Boolean(p.model_3d_url)); setModelError(false); window.scrollTo({ top: 0, behavior: 'smooth' }) }
-  function choose3d() { if (selected?.model_3d_url) { setModelError(false); setModelLoading(true); setShow3d(true) } }
+  function openProduct(p) { const hasModel = Boolean(modelSrc(p)); setSelected(p); setImageIndex(0); setShow3d(hasModel); setModelLoading(hasModel); setModelError(false); window.scrollTo({ top: 0, behavior: 'smooth' }) }
+  function choose3d() { if (modelSrc(selected)) { setModelError(false); setModelLoading(true); setShow3d(true) } }
   async function toggleViewerFullscreen() {
     const el = viewerWrap.current
     if (!el) return
@@ -79,7 +85,7 @@ function App() {
   function contactHref(p) { const msg = encodeURIComponent(contactText(p)); return WA ? `https://wa.me/${WA}?text=${msg}` : `https://t.me/${TELEGRAM.split('/').filter(Boolean).pop()}` }
 
   return <div className="app-shell">
-    <div className="top-strip">ADAMA, ETHIOPIA <span>鈥�</span> QUALITY MOBILE, ACCESSORIES & FASHION</div>
+    <div className="top-strip">ADAMA, ETHIOPIA <span>—</span> QUALITY MOBILE, ACCESSORIES & FASHION</div>
     <header className="header">
       <a className="brand" href="#home" onClick={() => setSelected(null)}><span className="brand-mark">W</span><span><b>WANOFI</b><small>MOBILE & FASHION</small></span></a>
       <nav className={mobileMenu ? 'nav open' : 'nav'}>
@@ -87,7 +93,7 @@ function App() {
         <a href="#shop" onClick={() => {setSelected(null);setMobileMenu(false)}}>Shop</a>
         <a href={TELEGRAM} target="_blank" rel="noreferrer">Telegram</a>
       </nav>
-      <div className="header-actions"><a className="channel-btn" href={TELEGRAM} target="_blank" rel="noreferrer">Visit channel 鈫�</a><button className="icon-btn mobile-toggle" onClick={() => setMobileMenu(!mobileMenu)} aria-label="Toggle menu">{mobileMenu ? <X/> : <Menu/>}</button></div>
+      <div className="header-actions"><a className="channel-btn" href={TELEGRAM} target="_blank" rel="noreferrer">Visit channel ↗</a><button className="icon-btn mobile-toggle" onClick={() => setMobileMenu(!mobileMenu)} aria-label="Toggle menu">{mobileMenu ? <X/> : <Menu/>}</button></div>
     </header>
 
     {selected ? <main className="detail-page">
@@ -95,32 +101,32 @@ function App() {
       <div className="detail-grid">
         <section className="viewer-panel" ref={viewerWrap}>
           <div className="viewer-tabs">
-            <button className={show3d && selected.model_3d_url && !modelError ? 'active' : ''} onClick={choose3d} disabled={!selected.model_3d_url}><Box size={16}/> 3D View</button>
+            <button className={show3d && modelSrc(selected) && !modelError ? 'active' : ''} onClick={choose3d} disabled={!selected.model_3d_url}><Box size={16}/> 3D View</button>
             <button className={!show3d || !selected.model_3d_url || modelError ? 'active' : ''} onClick={() => setShow3d(false)}><ImageIcon size={16}/> Photos</button>
           </div>
           {show3d && selected.model_3d_url && !modelError ? <div className="model-stage">
             <model-viewer key={selected.model_3d_url} src={selected.model_3d_url} camera-controls touch-action="pan-y" auto-rotate rotation-per-second="18deg" interaction-prompt="auto" shadow-intensity="1" exposure="1" environment-image="neutral" ar alt={selected.name || selected.product_name || '3D product model'} onLoad={() => setModelLoading(false)} onError={() => {setModelLoading(false);setModelError(true);setShow3d(false)}}>
               <div slot="progress-bar" className="model-progress"><span></span></div>
             </model-viewer>
-            {modelLoading && <div className="model-loading"><span className="loader"/>Loading 3D model鈥�</div>}
-            <button className="viewer-fullscreen" type="button" onClick={toggleViewerFullscreen} aria-label="View 3D model fullscreen">鉀� <span>Full screen</span></button>
+            {modelLoading && <div className="model-loading"><span className="loader"/>Loading 3D model—</div>}
+            <button className="viewer-fullscreen" type="button" onClick={toggleViewerFullscreen} aria-label="View 3D model fullscreen">⛶ <span>Full screen</span></button>
           </div> : <div className="photo-viewer">
             {modelError && <div className="model-error-note">This 3D model could not be loaded. Showing product photos instead.</div>}
             {listImages(selected).length ? <><img src={listImages(selected)[imageIndex]} alt={selected.name || selected.product_name || 'Product'} onError={e => {e.currentTarget.style.visibility='hidden'}}/>{listImages(selected).length > 1 && <><button className="gallery-arrow prev" onClick={() => setImageIndex((imageIndex - 1 + listImages(selected).length) % listImages(selected).length)} aria-label="Previous photo"><ChevronLeft/></button><button className="gallery-arrow next" onClick={() => setImageIndex((imageIndex + 1) % listImages(selected).length)} aria-label="Next photo"><ChevronRight/></button></>}</> : <div className="no-photo"><Smartphone size={64}/><span>Product photos coming soon</span></div>}
           </div>}
-          {show3d && selected.model_3d_url && !modelError && <p className="viewer-hint"><RefreshCw size={14}/> Drag to rotate 鈥� Pinch to zoom 鈥� Full screen for details</p>}
+          {show3d && selected.model_3d_url && !modelError && <p className="viewer-hint"><RefreshCw size={14}/> Drag to rotate — Pinch to zoom — Full screen for details</p>}
           {listImages(selected).length > 0 && <div className="thumbs">{listImages(selected).map((src,i)=><button key={src+i} className={!show3d && i===imageIndex?'chosen':''} onClick={()=>{setImageIndex(i);setShow3d(false)}}><img src={src} alt={`View ${i+1}`}/></button>)}</div>}
         </section>
-        <section className="detail-info"><span className="eyebrow">{selected.category || 'WANOFI COLLECTION'}</span><h1>{selected.name || selected.product_name}</h1>{selected.sku && <p className="sku">Product code: {selected.sku}</p>}<div className="detail-price">{money(selected.price ?? selected.selling_price)}</div><div className={selected.available ? 'availability in-stock' : 'availability'}><i/> {selected.available ? 'Available 鈥� contact us to confirm' : 'Currently unavailable'}</div><p className="description">{selected.description || 'Contact WANOFI for product details, specifications and current availability.'}</p><a className="primary-btn contact-btn" href={contactHref(selected)} target="_blank" rel="noreferrer"><MessageCircle size={19}/> Ask about this product</a><p className="secure-note">Visit our shop in Adama, Ethiopia. Product availability and prices may change.</p></section>
+        <section className="detail-info"><span className="eyebrow">{selected.category || 'WANOFI COLLECTION'}</span><h1>{selected.name || selected.product_name}</h1>{selected.sku && <p className="sku">Product code: {selected.sku}</p>}<div className="detail-price">{money(selected.price ?? selected.selling_price)}</div><div className={selected.available ? 'availability in-stock' : 'availability'}><i/> {selected.available ? 'Available — contact us to confirm' : 'Currently unavailable'}</div><p className="description">{selected.description || 'Contact WANOFI for product details, specifications and current availability.'}</p><a className="primary-btn contact-btn" href={contactHref(selected)} target="_blank" rel="noreferrer"><MessageCircle size={19}/> Ask about this product</a><p className="secure-note">Visit our shop in Adama, Ethiopia. Product availability and prices may change.</p></section>
       </div>
     </main> : <>
-      <section className="hero" id="home"><div className="hero-content"><span className="eyebrow light">WELCOME TO WANOFI</span><h1>Find your next<br/><em>favorite thing.</em></h1><p>Explore our collection of mobile phones, accessories and fashion. View products up close and discover selected items in interactive 3D.</p><a href="#shop" className="primary-btn">Explore collection <span>鈫�</span></a><div className="hero-foot"><span><Smartphone size={17}/> Mobile & tech</span><span><Glasses size={17}/> Style & fashion</span><span><Box size={17}/> 3D product view</span></div></div><div className="hero-art"><div className="orbit orbit-one"/><div className="orbit orbit-two"/><div className="hero-card"><div className="hero-card-top">WANOFI <span>鉁�</span></div><div className="phone-art"><div className="phone-camera"/><div className="phone-screen"><span>W</span><small>Explore more.</small></div></div><div className="hero-card-bottom">DISCOVER YOUR STYLE <b>01 / 03</b></div></div><div className="floating-tag">NEW ARRIVALS <b>鉁�</b></div></div></section>
+      <section className="hero" id="home"><div className="hero-content"><span className="eyebrow light">WELCOME TO WANOFI</span><h1>Find your next<br/><em>favorite thing.</em></h1><p>Explore our collection of mobile phones, accessories and fashion. View products up close and discover selected items in interactive 3D.</p><a href="#shop" className="primary-btn">Explore collection <span>↗</span></a><div className="hero-foot"><span><Smartphone size={17}/> Mobile & tech</span><span><Glasses size={17}/> Style & fashion</span><span><Box size={17}/> 3D product view</span></div></div><div className="hero-art"><div className="orbit orbit-one"/><div className="orbit orbit-two"/><div className="hero-card"><div className="hero-card-top">WANOFI <span>✦</span></div><div className="phone-art"><div className="phone-camera"/><div className="phone-screen"><span>W</span><small>Explore more.</small></div></div><div className="hero-card-bottom">DISCOVER YOUR STYLE <b>01 / 03</b></div></div><div className="floating-tag">NEW ARRIVALS <b>✦</b></div></div></section>
       <main id="shop" className="shop-section"><div className="section-heading"><div><span className="eyebrow">THE WANOFI COLLECTION</span><h2>Explore products</h2><p>Find what you love. Open a product to see its details and 3D model when available.</p></div><div className="product-count">{products.length} <span>products</span></div></div>
-        <div className="toolbar"><div className="category-list">{categoryNames.map(c=><button key={c} className={category===c?'selected':''} onClick={()=>setCategory(c)}>{c}</button>)}</div><label className="search-box"><Search size={18}/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search products..."/><kbd>鈱�</kbd></label></div>
-        {loading ? <div className="state-box"><div className="loader"/><p>Loading WANOFI collection...</p></div> : error ? <div className="state-box"><p>{error}</p><button className="outline-btn" onClick={load}><RefreshCw size={16}/> Try again</button></div> : filtered.length ? <div className="product-grid">{filtered.map((p,i)=><article className="product-card" key={p.id || p.sku || i} onClick={()=>openProduct(p)}><div className="product-image">{listImages(p).length ? <img src={listImages(p)[0]} alt={p.name || p.product_name} loading="lazy"/> : <div className="placeholder"><span>{(p.name || p.product_name || 'W').slice(0,1).toUpperCase()}</span><small>WANOFI</small></div>}{p.model_3d_url && <span className="three-d-badge"><Box size={13}/> 3D VIEW</span>}<button className="quick-view" aria-label="View product" onClick={e=>{e.stopPropagation();openProduct(p)}}>View details 鈫�</button></div><div className="product-meta"><span>{p.category || 'COLLECTION'}</span><span className={p.available ? 'dot available' : 'dot'}>{p.available ? 'Available' : 'Unavailable'}</span></div><h3>{p.name || p.product_name}</h3><div className="card-bottom"><b>{money(p.price ?? p.selling_price)}</b><button onClick={e=>{e.stopPropagation();openProduct(p)}} aria-label="Open product">鈫�</button></div></article>)}</div> : <div className="state-box"><ShoppingBag size={34}/><h3>No products found</h3><p>Try another search or category.</p><button className="outline-btn" onClick={()=>{setQuery('');setCategory('All')}}>Clear filters</button></div>}
+        <div className="toolbar"><div className="category-list">{categoryNames.map(c=><button key={c} className={category===c?'selected':''} onClick={()=>setCategory(c)}>{c}</button>)}</div><label className="search-box"><Search size={18}/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search products..."/><kbd>⌕</kbd></label></div>
+        {loading ? <div className="state-box"><div className="loader"/><p>Loading WANOFI collection...</p></div> : error ? <div className="state-box"><p>{error}</p><button className="outline-btn" onClick={load}><RefreshCw size={16}/> Try again</button></div> : filtered.length ? <div className="product-grid">{filtered.map((p,i)=><article className="product-card" key={p.id || p.sku || i} onClick={()=>openProduct(p)}><div className="product-image">{listImages(p).length ? <img src={listImages(p)[0]} alt={p.name || p.product_name} loading="lazy"/> : <div className="placeholder"><span>{(p.name || p.product_name || 'W').slice(0,1).toUpperCase()}</span><small>WANOFI</small></div>}{modelSrc(p) && <span className="three-d-badge"><Box size={13}/> 3D VIEW</span>}<button className="quick-view" aria-label="View product" onClick={e=>{e.stopPropagation();openProduct(p)}}>View details ↗</button></div><div className="product-meta"><span>{p.category || 'COLLECTION'}</span><span className={p.available ? 'dot available' : 'dot'}>{p.available ? 'Available' : 'Unavailable'}</span></div><h3>{p.name || p.product_name}</h3><div className="card-bottom"><b>{money(p.price ?? p.selling_price)}</b><button onClick={e=>{e.stopPropagation();openProduct(p)}} aria-label="Open product">↗</button></div></article>)}</div> : <div className="state-box"><ShoppingBag size={34}/><h3>No products found</h3><p>Try another search or category.</p><button className="outline-btn" onClick={()=>{setQuery('');setCategory('All')}}>Clear filters</button></div>}
       </main>
     </>}
-    <footer className="footer"><div className="footer-main"><a className="brand footer-brand" href="#home"><span className="brand-mark">W</span><span><b>WANOFI</b><small>MOBILE & FASHION</small></span></a><p>Technology, accessories and style 鈥� all in one place.</p><a className="footer-link" href={TELEGRAM} target="_blank" rel="noreferrer">Follow WANOFI on Telegram 鈫�</a></div><div className="footer-bottom"><span>漏 {new Date().getFullYear()} WANOFI MOBILE & FASHION</span><span>ADAMA, ETHIOPIA</span></div></footer>
+    <footer className="footer"><div className="footer-main"><a className="brand footer-brand" href="#home"><span className="brand-mark">W</span><span><b>WANOFI</b><small>MOBILE & FASHION</small></span></a><p>Technology, accessories and style — all in one place.</p><a className="footer-link" href={TELEGRAM} target="_blank" rel="noreferrer">Follow WANOFI on Telegram ↗</a></div><div className="footer-bottom"><span>© {new Date().getFullYear()} WANOFI MOBILE & FASHION</span><span>ADAMA, ETHIOPIA</span></div></footer>
   </div>
 }
 export default App
