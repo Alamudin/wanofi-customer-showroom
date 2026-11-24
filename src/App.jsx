@@ -5,8 +5,15 @@ const API = (import.meta.env.VITE_API_BASE_URL || 'https://wanofi-ai-manager.onr
 const WA = (import.meta.env.VITE_WHATSAPP_NUMBER || '').replace(/\D/g, '')
 const TELEGRAM = import.meta.env.VITE_TELEGRAM_CHANNEL || 'https://t.me/'
 const money = value => `ETB ${Number(value || 0).toLocaleString('en-ET', { maximumFractionDigits: 2 })}`
-const listImages = p => Array.isArray(p?.images) ? p.images.filter(Boolean) : []
+const is530JX = p => Number(p?.id) === 82 || String(p?.sku || '').toLowerCase() === 'mb_530jx'
+const listImages = p => {
+  const images = Array.isArray(p?.images) ? p.images.filter(Boolean) : []
+  // Temporary generic preview until WANOFI uploads actual 530JX photos.
+  return images.length ? images : (is530JX(p) ? ['https://vinish-models.pages.dev/phones/smartphone.webp'] : [])
+}
 const modelSrc = p => {
+  // Temporary generic smartphone model for 530JX; it is illustrative, not an exact replica.
+  if (is530JX(p)) return 'https://vinish-models.pages.dev/phones/smartphone.glb'
   let raw = String(p?.model_3d_url || '').trim()
   if (!raw) return ''
   // Convert GitHub's HTML blob page URL into a direct binary URL usable by <model-viewer>.
@@ -153,7 +160,7 @@ function App() {
           {show3d && modelSrc(selected) && !modelError && <p className="viewer-hint"><RefreshCw size={14}/> Drag to rotate — Pinch to zoom — Full screen for details</p>}
           {listImages(selected).length > 0 && <div className="thumbs">{listImages(selected).map((src,i)=><button key={src+i} className={!show3d && i===imageIndex?'chosen':''} onClick={()=>{setImageIndex(i);setShow3d(false)}}><img src={src} alt={`View ${i+1}`}/></button>)}</div>}
         </section>
-        <section className="detail-info"><span className="eyebrow">{selected.category || 'WANOFI COLLECTION'}</span><h1>{selected.name || selected.product_name}</h1>{selected.sku && <p className="sku">Product code: {selected.sku}</p>}<div className="detail-price">{money(selected.price ?? selected.selling_price)}</div><div className={selected.available ? 'availability in-stock' : 'availability'}><i/> {selected.available ? 'Available — contact us to confirm' : 'Currently unavailable'}</div><p className="description">{selected.description || 'Contact WANOFI for product details, specifications and current availability.'}</p><a className="primary-btn contact-btn" href={contactHref(selected)} target="_blank" rel="noreferrer"><MessageCircle size={19}/> Ask about this product</a><p className="secure-note">Visit our shop in Adama, Ethiopia. Product availability and prices may change.</p></section>
+        <section className="detail-info"><span className="eyebrow">{selected.category || 'WANOFI COLLECTION'}</span><h1>{selected.name || selected.product_name}</h1>{selected.sku && <p className="sku">Product code: {selected.sku}</p>}<div className="detail-price">{money(selected.price ?? selected.selling_price)}</div><div className={selected.available ? 'availability in-stock' : 'availability'}><i/> {selected.available ? 'Available — contact us to confirm' : 'Currently unavailable'}</div><p className="description">{selected.description || 'Contact WANOFI for product details, specifications and current availability.'}</p>{is530JX(selected) && <p className="secure-note">3D preview is a generic smartphone illustration, not an exact 530JX model. Model credit: “Smartphone” by vinish.dev, CC BY 4.0.</p>}<a className="primary-btn contact-btn" href={contactHref(selected)} target="_blank" rel="noreferrer"><MessageCircle size={19}/> Ask about this product</a><p className="secure-note">Visit our shop in Adama, Ethiopia. Product availability and prices may change.</p></section>
       </div>
     </main> : <>
       <section className="hero" id="home"><div className="hero-content"><span className="eyebrow light">WELCOME TO WANOFI</span><h1>Find your next<br/><em>favorite thing.</em></h1><p>Explore our collection of mobile phones, accessories and fashion. View products up close and discover selected items in interactive 3D.</p><a href="#shop" className="primary-btn">Explore collection <span>↗</span></a><div className="hero-foot"><span><Smartphone size={17}/> Mobile & tech</span><span><Glasses size={17}/> Style & fashion</span><span><Box size={17}/> 3D product view</span></div></div><div className="hero-art"><div className="orbit orbit-one"/><div className="orbit orbit-two"/><div className="hero-card"><div className="hero-card-top">WANOFI <span>✦</span></div><div className="phone-art"><div className="phone-camera"/><div className="phone-screen"><span>W</span><small>Explore more.</small></div></div><div className="hero-card-bottom">DISCOVER YOUR STYLE <b>01 / 03</b></div></div><div className="floating-tag">NEW ARRIVALS <b>✦</b></div></div></section>
